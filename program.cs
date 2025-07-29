@@ -29,7 +29,7 @@ class Program
     }
 
     // Called once when window loads
-    static void OnLoad()
+    static unsafe void OnLoad()
     {
         // Fallback if the window initialization has failed
         if (_window is null)
@@ -49,7 +49,7 @@ class Program
     static void OnUpdate(double deltaTime) { }
 
     // Called every frame (for drawing logic)
-    static void OnRender(double deltaTime) { }
+    static unsafe void OnRender(double deltaTime) { }
 
     // Window was resized
     static void OnFrameBufferResize(Vector2D<int> newSize) { }
