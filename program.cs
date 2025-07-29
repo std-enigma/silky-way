@@ -31,8 +31,12 @@ class Program
     // Called once when window loads
     static void OnLoad()
     {
+        // Fallback if the window initialization has failed
+        if (_window is null)
+            return;
+
         // Create the input context
-        _input = _window?.CreateInput();
+        _input = _window.CreateInput();
         // Handle keyboard input
         for (int i = 0; i < _input?.Keyboards.Count; i++)
             _input.Keyboards[i].KeyDown += OnKeyDown;
