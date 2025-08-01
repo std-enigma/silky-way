@@ -6,8 +6,10 @@ using Silk.NET.Windowing;
 
 class Program
 {
-    static uint _vao; // The vertex array object
-    static uint _vbo; // The vertex buffer object
+    static uint _vao1; // The first vertex array object
+    static uint _vbo1; // The first vertex buffer object
+    static uint _vao2; // The second vertex array object
+    static uint _vbo2; // The second vertex buffer object
     static uint _program; // The shader program
     static GL? _gl; // OpenGL context
     static IWindow? _window; // Window instance
@@ -56,22 +58,64 @@ class Program
         _gl.ClearColor(Color.Black);
 
         // Create the vertex array object
-        _vao = _gl.GenVertexArray();
-        _gl.BindVertexArray(_vao);
+        _vao1 = _gl.GenVertexArray();
+        _gl.BindVertexArray(_vao1);
 
         // Create the vertex buffer object
-        _vbo = _gl.GenBuffer();
-        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
+        _vbo1 = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo1);
+
+        const uint posLoc = 0;
 
         // Add the vertices to the vertex buffer object
-        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f };
-        fixed (float* bufData = vertices)
+        var vertices1 = new float[] { -0.9f, -0.5f, 0.0f, -0.0f, -0.5f, 0.0f, -0.45f, 0.5f, 0.0f };
+        fixed (float* bufData = vertices1)
             _gl.BufferData(
                 BufferTargetARB.ArrayBuffer,
-                (nuint)(vertices.Length * sizeof(float)),
+                (nuint)(vertices1.Length * sizeof(float)),
                 bufData,
                 BufferUsageARB.StaticDraw
             );
+
+        // Define shader data mapping
+        _gl.EnableVertexAttribArray(posLoc);
+        _gl.VertexAttribPointer(
+            posLoc,
+            3,
+            VertexAttribPointerType.Float,
+            false,
+            3 * sizeof(float),
+            null
+        );
+
+        // Create the vertex array object
+        _vao2 = _gl.GenVertexArray();
+        _gl.BindVertexArray(_vao2);
+
+        // Create the vertex buffer object
+        _vbo2 = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo2);
+
+        // Add the vertices to the vertex buffer object
+        var vertices2 = new float[] { 0.0f, -0.5f, 0.0f, 0.9f, -0.5f, 0.0f, 0.45f, 0.5f, 0.0f };
+        fixed (float* bufData = vertices2)
+            _gl.BufferData(
+                BufferTargetARB.ArrayBuffer,
+                (nuint)(vertices2.Length * sizeof(float)),
+                bufData,
+                BufferUsageARB.StaticDraw
+            );
+
+        // Define shader data mapping
+        _gl.EnableVertexAttribArray(posLoc);
+        _gl.VertexAttribPointer(
+            posLoc,
+            3,
+            VertexAttribPointerType.Float,
+            false,
+            3 * sizeof(float),
+            null
+        );
 
         // Create and compile the vertex shader
         var vertShaderSrc = File.ReadAllText("vert.glsl");
@@ -110,18 +154,6 @@ class Program
         _gl.DeleteShader(vertShader);
         _gl.DeleteShader(fragShader);
 
-        // Define shader data mapping
-        const uint posLoc = 0;
-        _gl.EnableVertexAttribArray(posLoc);
-        _gl.VertexAttribPointer(
-            posLoc,
-            3,
-            VertexAttribPointerType.Float,
-            false,
-            3 * sizeof(float),
-            null
-        );
-
         // Unbind resources
         _gl?.BindVertexArray(0);
         _gl?.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
@@ -137,8 +169,10 @@ class Program
         _gl?.Clear(ClearBufferMask.ColorBufferBit);
 
         // Draw our beautiful triangle
-        _gl?.BindVertexArray(_vao);
         _gl?.UseProgram(_program);
+        _gl?.BindVertexArray(_vao1);
+        _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
+        _gl?.BindVertexArray(_vao2);
         _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
     }
 
@@ -152,8 +186,10 @@ class Program
     // Program closing
     static void OnClose()
     {
-        _gl?.DeleteBuffer(_vbo);
-        _gl?.DeleteVertexArray(_vao);
+        _gl?.DeleteBuffer(_vbo1);
+        _gl?.DeleteBuffer(_vbo2);
+        _gl?.DeleteVertexArray(_vao1);
+        _gl?.DeleteVertexArray(_vao2);
         _gl?.DeleteProgram(_program);
     }
 
