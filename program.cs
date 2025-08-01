@@ -8,6 +8,7 @@ class Program
 {
     static uint _vao; // The vertex array object
     static uint _vbo; // The vertex buffer object
+    static uint _ebo; // The element array buffer object
     static uint _program; // The shader program
     static GL? _gl; // OpenGL context
     static IWindow? _window; // Window instance
@@ -64,11 +65,39 @@ class Program
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
 
         // Add the vertices to the vertex buffer object
-        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f };
+        var vertices = new float[]
+        {
+            -0.5f,
+            -0.5f,
+            0.0f,
+            0.5f,
+            -0.5f,
+            0.0f,
+            0.5f,
+            0.5f,
+            0.0f,
+            -0.5f,
+            0.5f,
+            0.0f,
+        };
         fixed (float* bufData = vertices)
             _gl.BufferData(
                 BufferTargetARB.ArrayBuffer,
                 (nuint)(vertices.Length * sizeof(float)),
+                bufData,
+                BufferUsageARB.StaticDraw
+            );
+
+        // Create the element array buffer object
+        _ebo = _gl.GenBuffer();
+        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo);
+
+        // Add the indicies to the element array buffer object
+        var indicies = new uint[] { 0u, 1u, 2u, 2u, 3u, 0u };
+        fixed (void* bufData = indicies)
+            _gl.BufferData(
+                BufferTargetARB.ElementArrayBuffer,
+                (nuint)(indicies.Length * sizeof(uint)),
                 bufData,
                 BufferUsageARB.StaticDraw
             );
@@ -125,6 +154,7 @@ class Program
         // Unbind resources
         _gl?.BindVertexArray(0);
         _gl?.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+        _gl?.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
     }
 
     // Called every frame (for application logic)
@@ -139,7 +169,7 @@ class Program
         // Draw our beautiful triangle
         _gl?.BindVertexArray(_vao);
         _gl?.UseProgram(_program);
-        _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
+        _gl?.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
     }
 
     // Window was resized
@@ -152,6 +182,7 @@ class Program
     // Program closing
     static void OnClose()
     {
+        _gl?.DeleteBuffer(_ebo);
         _gl?.DeleteBuffer(_vbo);
         _gl?.DeleteVertexArray(_vao);
         _gl?.DeleteProgram(_program);
