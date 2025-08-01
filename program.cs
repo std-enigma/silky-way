@@ -64,7 +64,29 @@ class Program
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
 
         // Add the vertices to the vertex buffer object
-        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f };
+        var vertices = new float[]
+        {
+            // first triangle
+            -0.9f,
+            -0.5f,
+            0.0f,
+            -0.0f,
+            -0.5f,
+            0.0f,
+            -0.45f,
+            0.5f,
+            0.0f,
+            // second triangle
+            0.0f,
+            -0.5f,
+            0.0f,
+            0.9f,
+            -0.5f,
+            0.0f,
+            0.45f,
+            0.5f,
+            0.0f,
+        };
         fixed (float* bufData = vertices)
             _gl.BufferData(
                 BufferTargetARB.ArrayBuffer,
@@ -139,7 +161,7 @@ class Program
         // Draw our beautiful triangle
         _gl?.BindVertexArray(_vao);
         _gl?.UseProgram(_program);
-        _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
+        _gl?.DrawArrays(PrimitiveType.Triangles, 0, 6);
     }
 
     // Window was resized
