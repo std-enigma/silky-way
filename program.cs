@@ -109,6 +109,7 @@ class Program
         _gl.DetachShader(_program, fragShader);
         _gl.DeleteShader(vertShader);
         _gl.DeleteShader(fragShader);
+        _gl.UseProgram(_program);
 
         // Define shader data mapping
         const uint posLoc = 0;
@@ -128,7 +129,14 @@ class Program
     }
 
     // Called every frame (for application logic)
-    static void OnUpdate(double deltaTime) { }
+    static void OnUpdate(double deltaTime)
+    {
+        if (_gl is null || _window is null)
+            return;
+
+        var uniformLoc = _gl.GetUniformLocation(_program, "uTime");
+        _gl.Uniform1(uniformLoc, (float)_window.Time);
+    }
 
     // Called every frame (for drawing logic)
     static unsafe void OnRender(double deltaTime)
