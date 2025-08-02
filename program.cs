@@ -64,7 +64,27 @@ class Program
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
 
         // Add the vertices to the vertex buffer object
-        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f };
+        var vertices = new float[]
+        {
+            -0.5f,
+            0.0f,
+            0.0f,
+            0.7f,
+            0.6f,
+            0.8f,
+            0.0f,
+            0.5f,
+            0.0f,
+            0.9f,
+            0.5f,
+            0.6f,
+            0.5f,
+            0.0f,
+            0.0f,
+            0.5f,
+            0.8f,
+            0.9f,
+        };
         fixed (float* bufData = vertices)
             _gl.BufferData(
                 BufferTargetARB.ArrayBuffer,
@@ -118,8 +138,19 @@ class Program
             3,
             VertexAttribPointerType.Float,
             false,
-            3 * sizeof(float),
+            6 * sizeof(float),
             null
+        );
+
+        const uint colorLoc = 1;
+        _gl.EnableVertexAttribArray(colorLoc);
+        _gl.VertexAttribPointer(
+            colorLoc,
+            3,
+            VertexAttribPointerType.Float,
+            false,
+            6 * sizeof(float),
+            (void*)(3 * sizeof(float))
         );
 
         // Unbind resources
