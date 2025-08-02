@@ -64,7 +64,7 @@ class Program
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
 
         // Add the vertices to the vertex buffer object
-        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f };
+        var vertices = new float[] { -0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f }; // The answer to the why the bottom-left side is black is that the position of the first vertex is (-0.5, 0.0, 0.0) meaning that since the R (red) value is negative and the GB (green & blue) are equal to zero. the ouput color get's black since the RGB values are between 0-1
         fixed (float* bufData = vertices)
             _gl.BufferData(
                 BufferTargetARB.ArrayBuffer,
