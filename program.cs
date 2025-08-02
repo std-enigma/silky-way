@@ -10,7 +10,8 @@ class Program
     static uint _vbo1; // The first vertex buffer object
     static uint _vao2; // The second vertex array object
     static uint _vbo2; // The second vertex buffer object
-    static uint _program; // The shader program
+    static uint _program1; // The shader program
+    static uint _program2; // The shader program
     static GL? _gl; // OpenGL context
     static IWindow? _window; // Window instance
     static IInputContext? _input; // Input manager
@@ -129,30 +130,50 @@ class Program
             );
 
         // Create and compile the fragment shader
-        var fragShaderSrc = File.ReadAllText("frag.glsl");
-        var fragShader = _gl.CreateShader(ShaderType.FragmentShader);
-        _gl.ShaderSource(fragShader, fragShaderSrc);
-        _gl.CompileShader(fragShader);
-        _gl.GetShader(fragShader, ShaderParameterName.CompileStatus, out int fStatus);
-        if (fStatus != (int)GLEnum.True)
+        var fragShader1Src = File.ReadAllText("frag1.glsl");
+        var fragShader1 = _gl.CreateShader(ShaderType.FragmentShader);
+        _gl.ShaderSource(fragShader1, fragShader1Src);
+        _gl.CompileShader(fragShader1);
+        _gl.GetShader(fragShader1, ShaderParameterName.CompileStatus, out int f1Status);
+        if (f1Status != (int)GLEnum.True)
             throw new Exception(
-                "Fragment shader failed to compile: " + _gl?.GetShaderInfoLog(fragShader)
+                "Fragment shader failed to compile: " + _gl?.GetShaderInfoLog(fragShader1)
+            );
+
+        var fragShader2Src = File.ReadAllText("frag2.glsl");
+        var fragShader2 = _gl.CreateShader(ShaderType.FragmentShader);
+        _gl.ShaderSource(fragShader2, fragShader2Src);
+        _gl.CompileShader(fragShader2);
+        _gl.GetShader(fragShader2, ShaderParameterName.CompileStatus, out int f2Status);
+        if (f1Status != (int)GLEnum.True)
+            throw new Exception(
+                "Fragment shader failed to compile: " + _gl?.GetShaderInfoLog(fragShader2)
             );
 
         // Create the shader program
-        _program = _gl.CreateProgram();
-        _gl.AttachShader(_program, vertShader);
-        _gl.AttachShader(_program, fragShader);
-        _gl.LinkProgram(_program);
-        _gl.GetProgram(_program, ProgramPropertyARB.LinkStatus, out int lStatus);
-        if (lStatus != (int)GLEnum.True)
-            throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program));
+        _program1 = _gl.CreateProgram();
+        _gl.AttachShader(_program1, vertShader);
+        _gl.AttachShader(_program1, fragShader1);
+        _gl.LinkProgram(_program1);
+        _gl.GetProgram(_program1, ProgramPropertyARB.LinkStatus, out int l1Status);
+        if (l1Status != (int)GLEnum.True)
+            throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program1));
+
+        _program2 = _gl.CreateProgram();
+        _gl.AttachShader(_program2, vertShader);
+        _gl.AttachShader(_program2, fragShader2);
+        _gl.LinkProgram(_program2);
+        _gl.GetProgram(_program2, ProgramPropertyARB.LinkStatus, out int l2Status);
+        if (l2Status != (int)GLEnum.True)
+            throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program2));
 
         // Delete the shaders
-        _gl.DetachShader(_program, vertShader);
-        _gl.DetachShader(_program, fragShader);
+        _gl.DetachShader(_program1, vertShader);
+        _gl.DetachShader(_program1, fragShader1);
+        _gl.DetachShader(_program2, fragShader2);
         _gl.DeleteShader(vertShader);
-        _gl.DeleteShader(fragShader);
+        _gl.DeleteShader(fragShader1);
+        _gl.DeleteShader(fragShader2);
 
         // Unbind resources
         _gl?.BindVertexArray(0);
@@ -169,9 +190,10 @@ class Program
         _gl?.Clear(ClearBufferMask.ColorBufferBit);
 
         // Draw our beautiful triangle
-        _gl?.UseProgram(_program);
+        _gl?.UseProgram(_program1);
         _gl?.BindVertexArray(_vao1);
         _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
+        _gl?.UseProgram(_program2);
         _gl?.BindVertexArray(_vao2);
         _gl?.DrawArrays(PrimitiveType.Triangles, 0, 3);
     }
@@ -190,7 +212,8 @@ class Program
         _gl?.DeleteBuffer(_vbo2);
         _gl?.DeleteVertexArray(_vao1);
         _gl?.DeleteVertexArray(_vao2);
-        _gl?.DeleteProgram(_program);
+        _gl?.DeleteProgram(_program1);
+        _gl?.DeleteProgram(_program2);
     }
 
     // Any key pressed
