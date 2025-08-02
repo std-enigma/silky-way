@@ -104,6 +104,11 @@ class Program
         if (lStatus != (int)GLEnum.True)
             throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program));
 
+        const float offset = 0.5f;
+        var offsetLoc = _gl.GetUniformLocation(_program, "uOffset");
+        _gl.UseProgram(_program);
+        _gl.Uniform1(offsetLoc, offset);
+
         // Delete the shaders
         _gl.DetachShader(_program, vertShader);
         _gl.DetachShader(_program, fragShader);
