@@ -6,10 +6,10 @@ using Silk.NET.Windowing;
 
 class Program
 {
-    static uint _vao; // The vertex array object
-    static uint _vbo; // The vertex buffer object
-    static uint _ebo; // The element array buffer object
-    static uint _program; // The shader program
+    static VertexArrayObject<float, uint>? _vao; // The vertex array object
+    static BufferObject<float>? _vbo; // The vertex buffer object
+    static BufferObject<uint>? _ebo; // The element array buffer object
+    static ShaderProgram? _program; // The shader program
     static GL? _gl; // OpenGL context
     static IWindow? _window; // Window instance
     static IInputContext? _input; // Input manager
@@ -56,15 +56,7 @@ class Program
         _gl = _window.CreateOpenGL();
         _gl.ClearColor(Color.Black);
 
-        // Create the vertex array object
-        _vao = _gl.GenVertexArray();
-        _gl.BindVertexArray(_vao);
-
         // Create the vertex buffer object
-        _vbo = _gl.GenBuffer();
-        _gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
-
-        // Add the vertices to the vertex buffer object
         var vertices = new float[]
         {
             -0.5f,
@@ -80,76 +72,20 @@ class Program
             0.5f,
             0.0f,
         };
-        fixed (float* bufData = vertices)
-            _gl.BufferData(
-                BufferTargetARB.ArrayBuffer,
-                (nuint)(vertices.Length * sizeof(float)),
-                bufData,
-                BufferUsageARB.StaticDraw
-            );
+        _vbo = new BufferObject<float>(_gl, BufferTargetARB.ArrayBuffer, vertices);
 
         // Create the element array buffer object
-        _ebo = _gl.GenBuffer();
-        _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, _ebo);
-
-        // Add the indicies to the element array buffer object
         var indicies = new uint[] { 0u, 1u, 2u, 2u, 3u, 0u };
-        fixed (void* bufData = indicies)
-            _gl.BufferData(
-                BufferTargetARB.ElementArrayBuffer,
-                (nuint)(indicies.Length * sizeof(uint)),
-                bufData,
-                BufferUsageARB.StaticDraw
-            );
+        _ebo = new BufferObject<uint>(_gl, BufferTargetARB.ElementArrayBuffer, indicies);
 
-        // Create and compile the vertex shader
-        var vertShaderSrc = File.ReadAllText("vert.glsl");
-        var vertShader = _gl.CreateShader(ShaderType.VertexShader);
-        _gl.ShaderSource(vertShader, vertShaderSrc);
-        _gl.CompileShader(vertShader);
-        _gl.GetShader(vertShader, ShaderParameterName.CompileStatus, out int vStatus);
-        if (vStatus != (int)GLEnum.True)
-            throw new Exception(
-                "Vertex shader failed to compile: " + _gl?.GetShaderInfoLog(vertShader)
-            );
-
-        // Create and compile the fragment shader
-        var fragShaderSrc = File.ReadAllText("frag.glsl");
-        var fragShader = _gl.CreateShader(ShaderType.FragmentShader);
-        _gl.ShaderSource(fragShader, fragShaderSrc);
-        _gl.CompileShader(fragShader);
-        _gl.GetShader(fragShader, ShaderParameterName.CompileStatus, out int fStatus);
-        if (fStatus != (int)GLEnum.True)
-            throw new Exception(
-                "Fragment shader failed to compile: " + _gl?.GetShaderInfoLog(fragShader)
-            );
+        // Create the vertex array object
+        _vao = new VertexArrayObject<float, uint>(_gl, _vbo, _ebo);
 
         // Create the shader program
-        _program = _gl.CreateProgram();
-        _gl.AttachShader(_program, vertShader);
-        _gl.AttachShader(_program, fragShader);
-        _gl.LinkProgram(_program);
-        _gl.GetProgram(_program, ProgramPropertyARB.LinkStatus, out int lStatus);
-        if (lStatus != (int)GLEnum.True)
-            throw new Exception("Program failed to link: " + _gl.GetProgramInfoLog(_program));
-
-        // Delete the shaders
-        _gl.DetachShader(_program, vertShader);
-        _gl.DetachShader(_program, fragShader);
-        _gl.DeleteShader(vertShader);
-        _gl.DeleteShader(fragShader);
+        _program = new ShaderProgram(_gl, "vert.glsl", "frag.glsl");
 
         // Define shader data mapping
-        const uint posLoc = 0;
-        _gl.EnableVertexAttribArray(posLoc);
-        _gl.VertexAttribPointer(
-            posLoc,
-            3,
-            VertexAttribPointerType.Float,
-            false,
-            3 * sizeof(float),
-            null
-        );
+        _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 3, 0);
 
         // Unbind resources
         _gl?.BindVertexArray(0);
@@ -167,8 +103,8 @@ class Program
         _gl?.Clear(ClearBufferMask.ColorBufferBit);
 
         // Draw our beautiful triangle
-        _gl?.BindVertexArray(_vao);
-        _gl?.UseProgram(_program);
+        _vao?.Bind();
+        _program?.Use();
         _gl?.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
     }
 
@@ -182,10 +118,10 @@ class Program
     // Program closing
     static void OnClose()
     {
-        _gl?.DeleteBuffer(_ebo);
-        _gl?.DeleteBuffer(_vbo);
-        _gl?.DeleteVertexArray(_vao);
-        _gl?.DeleteProgram(_program);
+        _ebo?.Dispose();
+        _vbo?.Dispose();
+        _vao?.Dispose();
+        _program?.Dispose();
     }
 
     // Any key pressed
