@@ -6,6 +6,7 @@ using Silk.NET.Windowing;
 
 class Program
 {
+    static Texture? _texture;
     static VertexArrayObject<float, uint>? _vao; // The vertex array object
     static BufferObject<float>? _vbo; // The vertex buffer object
     static BufferObject<uint>? _ebo; // The element array buffer object
@@ -54,7 +55,12 @@ class Program
 
         // Create the opengl context
         _gl = _window.CreateOpenGL();
-        _gl.ClearColor(Color.Black);
+        _gl.ClearColor(Color.White);
+
+        // Create the texture
+        _texture = new Texture(_gl, "silk.png");
+        _gl.Enable(EnableCap.Blend);
+        _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
         // Create the vertex buffer object
         var vertices = new float[]
@@ -62,14 +68,22 @@ class Program
             -0.5f,
             -0.5f,
             0.0f,
+            0.0f,
+            1.0f,
             0.5f,
             -0.5f,
             0.0f,
+            1.0f,
+            1.0f,
             0.5f,
             0.5f,
             0.0f,
+            1.0f,
+            0.0f,
             -0.5f,
             0.5f,
+            0.0f,
+            0.0f,
             0.0f,
         };
         _vbo = new BufferObject<float>(_gl, BufferTargetARB.ArrayBuffer, vertices);
@@ -83,9 +97,11 @@ class Program
 
         // Create the shader program
         _program = new ShaderProgram(_gl, "vert.glsl", "frag.glsl");
+        _program.SetUniform("uTexture", 0);
 
         // Define shader data mapping
-        _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 3, 0);
+        _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 5, 0);
+        _vao.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, 5, 3);
 
         // Unbind resources
         _gl?.BindVertexArray(0);
@@ -105,6 +121,7 @@ class Program
         // Draw our beautiful triangle
         _vao?.Bind();
         _program?.Use();
+        _texture?.Bind();
         _gl?.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
     }
 
@@ -122,6 +139,7 @@ class Program
         _vbo?.Dispose();
         _vao?.Dispose();
         _program?.Dispose();
+        _texture?.Dispose();
     }
 
     // Any key pressed
