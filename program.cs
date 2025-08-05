@@ -68,16 +68,16 @@ class Program
         var vertices = new float[]
         {
             -0.5f,
-            -0.5f,
+            0.5f,
+            0.0f,
+            0.5f,
+            0.5f,
             0.0f,
             0.5f,
             -0.5f,
             0.0f,
-            0.5f,
-            0.5f,
-            0.0f,
             -0.5f,
-            0.5f,
+            -0.5f,
             0.0f,
         };
         fixed (float* bufData = vertices)
