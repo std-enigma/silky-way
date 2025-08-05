@@ -6,7 +6,8 @@ using Silk.NET.Windowing;
 
 class Program
 {
-    static Texture? _texture;
+    static Texture? _texture1;
+    static Texture? _texture2;
     static VertexArrayObject<float, uint>? _vao; // The vertex array object
     static BufferObject<float>? _vbo; // The vertex buffer object
     static BufferObject<uint>? _ebo; // The element array buffer object
@@ -58,7 +59,8 @@ class Program
         _gl.ClearColor(Color.Black);
 
         // Create the texture
-        _texture = new Texture(_gl, "silk.png");
+        _texture1 = new Texture(_gl, "container.jpg");
+        _texture2 = new Texture(_gl, "awesomeface.png");
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -97,7 +99,9 @@ class Program
 
         // Create the shader program
         _program = new ShaderProgram(_gl, "vert.glsl", "frag.glsl");
-        _program.SetUniform("uTexture", 0);
+        _program.Use();
+        _program.SetUniform("uTexture1", 0);
+        _program.SetUniform("uTexture2", 1);
 
         // Define shader data mapping
         _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 5, 0);
@@ -121,7 +125,8 @@ class Program
         // Draw our beautiful triangle
         _vao?.Bind();
         _program?.Use();
-        _texture?.Bind();
+        _texture1?.Bind(TextureUnit.Texture0);
+        _texture2?.Bind(TextureUnit.Texture1);
         _gl?.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
     }
 
@@ -139,7 +144,8 @@ class Program
         _vbo?.Dispose();
         _vao?.Dispose();
         _program?.Dispose();
-        _texture?.Dispose();
+        _texture1?.Dispose();
+        _texture2?.Dispose();
     }
 
     // Any key pressed

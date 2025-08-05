@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Silk.NET.OpenGL;
 
 /// <summary>
