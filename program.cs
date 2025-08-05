@@ -58,7 +58,7 @@ class Program
         _gl.ClearColor(Color.Black);
 
         // Create the texture
-        _texture = new Texture(_gl, "container.jpg");
+        _texture = new Texture(_gl, "silk.png");
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
