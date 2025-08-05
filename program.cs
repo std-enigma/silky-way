@@ -6,6 +6,7 @@ using Silk.NET.Windowing;
 
 class Program
 {
+    static float blendFactor = 0.5f;
     static Texture? _texture1;
     static Texture? _texture2;
     static VertexArrayObject<float, uint>? _vao; // The vertex array object
@@ -126,6 +127,7 @@ class Program
         // Draw our beautiful triangle
         _vao?.Bind();
         _program?.Use();
+        _program?.SetUniform("uBlendFactor", blendFactor);
         _texture1?.Bind(TextureUnit.Texture0);
         _texture2?.Bind(TextureUnit.Texture1);
         _gl?.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
@@ -154,6 +156,10 @@ class Program
     {
         if (key is Key.Escape)
             _window?.Close(); // Quit on ESC
+        if (key is Key.Up)
+            blendFactor = Math.Clamp(blendFactor + 0.1f, 0f, 1f); // Increase the blending factor of two textures on the up arrow key
+        if (key is Key.Down)
+            blendFactor = Math.Clamp(blendFactor - 0.1f, 0f, 1f); // Decrease the blending factor of two textures on the up arrow key
     }
 
     // Any gamepad button pressed
@@ -161,5 +167,9 @@ class Program
     {
         if (button.Name is ButtonName.Back)
             _window?.Close(); // Quit on BACK button
+        if (button.Name is ButtonName.DPadUp)
+            blendFactor = Math.Clamp(blendFactor + 0.1f, 0f, 1f); // Increase the blending factor of two textures on the DPad-Up button
+        if (button.Name is ButtonName.DPadDown)
+            blendFactor = Math.Clamp(blendFactor - 0.1f, 0f, 1f); // Decrease the blending factor of two textures on the DPad-Down button
     }
 }
