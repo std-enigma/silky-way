@@ -108,6 +108,7 @@ class Program
         _vao.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, 5, 3);
 
         // Unbind resources
+        _gl?.UseProgram(0);
         _gl?.BindVertexArray(0);
         _gl?.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
         _gl?.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
