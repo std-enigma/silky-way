@@ -60,6 +60,10 @@ class Program
 
         // Create the texture
         _texture1 = new Texture(_gl, "container.jpg");
+        _texture1.Bind(TextureUnit.Texture0);
+        var wrapMode = (int)TextureWrapMode.ClampToEdge;
+        _gl.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ref wrapMode);
+        _gl.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ref wrapMode);
         _texture2 = new Texture(_gl, "awesomeface.png");
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -71,16 +75,16 @@ class Program
             0.5f,
             0.0f,
             0.0f,
-            1.0f,
+            2.0f,
             0.5f,
             0.5f,
             0.0f,
-            1.0f,
-            1.0f,
+            2.0f,
+            2.0f,
             0.5f,
             -0.5f,
             0.0f,
-            1.0f,
+            2.0f,
             0.0f,
             -0.5f,
             -0.5f,
