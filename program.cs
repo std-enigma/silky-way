@@ -55,7 +55,7 @@ class Program
 
         // Create the opengl context
         _gl = _window.CreateOpenGL();
-        _gl.ClearColor(Color.White);
+        _gl.ClearColor(Color.Black);
 
         // Create the texture
         _texture = new Texture(_gl, "silk.png");
