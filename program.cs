@@ -58,7 +58,7 @@ class Program
         _gl.ClearColor(Color.Black);
 
         // Create the texture
-        _texture = new Texture(_gl, "silk.png");
+        _texture = new Texture(_gl, "container.jpg");
         _gl.Enable(EnableCap.Blend);
         _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -70,21 +70,33 @@ class Program
             0.0f,
             0.0f,
             1.0f,
+            0.7f,
+            0.6f,
+            0.8f,
             0.5f,
             -0.5f,
             0.0f,
             1.0f,
             1.0f,
+            0.9f,
+            0.5f,
+            0.6f,
             0.5f,
             0.5f,
             0.0f,
             1.0f,
             0.0f,
+            0.5f,
+            0.8f,
+            0.9f,
             -0.5f,
             0.5f,
             0.0f,
             0.0f,
             0.0f,
+            0.7f,
+            0.9f,
+            0.7f,
         };
         _vbo = new BufferObject<float>(_gl, BufferTargetARB.ArrayBuffer, vertices);
 
@@ -100,8 +112,9 @@ class Program
         _program.SetUniform("uTexture", 0);
 
         // Define shader data mapping
-        _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 5, 0);
-        _vao.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, 5, 3);
+        _vao.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, 8, 0);
+        _vao.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, 8, 3);
+        _vao.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, 8, 5);
 
         // Unbind resources
         _gl?.BindVertexArray(0);
